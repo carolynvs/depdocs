@@ -1,0 +1,4 @@
+languageCode = "en-us"
+title = "dep docs"
+baseurl = "http://carolynvs.github.io/depdocs/"
+theme = "docuapi"
