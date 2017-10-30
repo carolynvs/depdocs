@@ -7,7 +7,11 @@ hugo () {
 }
 
 preview() {
-  hugo server -D #--baseUrl=http://localhost --bind=0.0.0.0 -s ./site
+  hugo server --baseUrl=http://localhost --bind=0.0.0.0
+}
+
+generate() {
+  hugo -d ./_deploy
 }
 
 "$@"

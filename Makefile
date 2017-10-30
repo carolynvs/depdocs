@@ -8,3 +8,6 @@ hugo:
 
 preview:
 	./scripts/depdocs.sh preview
+
+generate:
+	./scripts/depdocs.sh generate
