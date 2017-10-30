@@ -1,0 +1,336 @@
+<!doctype html>
+<html>
+<head>
+	<meta name="generator" content="Hugo 0.30.2" />
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>dep docs</title>
+    <link href='/depdocs/slate/stylesheets/monokai.css' rel="stylesheet" media="screen" />
+<link href='/depdocs/slate/stylesheets/screen.css' rel="stylesheet" media="screen" />
+<link href='/depdocs/slate/stylesheets/print.css' rel="stylesheet" media="print" />
+
+    
+<script src='/depdocs/slate/javascripts/all_nosearch.js'></script>
+
+    
+</head>
+<body class="index" data-languages="">
+    <a href="#" id="nav-button">
+        <span>
+        NAV
+        <img src='/depdocs/slate/images/navbar.png'/>
+      </span>
+    </a>
+    <div class="tocify-wrapper">
+        
+         <img src='/depdocs/images/logo.png' />
+         
+        
+        <div id="toc">
+        </div>
+         
+        
+        
+    </div>
+    <div class="page-wrapper">
+        <div class="dark-box"></div>
+        <div class="content">
+            
+    
+        
+
+<h1 id="dep">dep</h1>
+
+<p>This is a prototype dependency management tool for Go. It requires Go 1.8 or newer to compile.</p>
+
+<p>The dep project is the official <em>experiment</em>, but not yet the official tool. Check out the <a href="https://github.com/golang/dep/wiki/Roadmap">Roadmap</a> for more on what this means!</p>
+
+<h2 id="current-status">Current status</h2>
+
+<p>It is safe to use dep in production. That means two things:</p>
+
+<ul>
+<li>Any valid metadata file (<code>Gopkg.toml</code> and <code>Gopkg.lock</code>) will be readable and considered valid by any future version of <code>dep</code>.</li>
+<li>The CLI UI is mostly stable. <code>dep init</code> and <code>dep ensure</code> are mostly set; <code>dep status</code> is likely to change a fair bit, and <code>dep prune</code> is <a href="https://github.com/golang/dep/issues/944">going to be absorbed into <code>dep ensure</code></a>.</li>
+</ul>
+
+<p>That said, keep in mind the following:</p>
+
+<ul>
+<li><code>dep init</code> on an existing project can be a rocky experience - we try to automatically convert from other tools&rsquo; metadata files, and that process is often complex and murky. Once your project is converted and you&rsquo;re using <code>dep ensure</code>, its behavior is quite stable.</li>
+<li><code>dep</code> still has nasty bugs, but in general these are comparable to or fewer than other tools out there.</li>
+<li><code>dep</code> is <a href="https://github.com/golang/dep/blob/master/docs/FAQ.md#why-is-dep-slow">pretty slow right now</a>, especially on the first couple times you run it. Just know that there is a <em>lot</em> of headroom for improvement, and work is actively underway.</li>
+<li><code>dep</code> is still changing rapidly. If you need stability (e.g. for CI), it&rsquo;s best to rely on a released version, not tip.</li>
+<li><code>dep</code>&rsquo;s exported API interface will continue to change in unpredictable, backwards-incompatible ways until we tag a v1.0.0 release.</li>
+</ul>
+
+<h2 id="context">Context</h2>
+
+<ul>
+<li><a href="https://blog.gopheracademy.com/advent-2016/saga-go-dependency-management/">The Saga of Go Dependency Management</a></li>
+<li>Official Google Docs
+
+<ul>
+<li><a href="https://docs.google.com/document/d/18tNd8r5DV0yluCR7tPvkMTsWD_lYcRO7NhpNSDymRr8/edit">Go Packaging Proposal Process</a></li>
+<li><a href="https://docs.google.com/document/d/1wT8e8wBHMrSRHY4UF_60GCgyWGqvYye4THvaDARPySs/edit">User Stories</a></li>
+<li><a href="https://docs.google.com/document/d/1JNP6DgSK-c6KqveIhQk-n_HAw3hsZkL-okoleM43NgA/edit">Features</a></li>
+<li><a href="https://docs.google.com/document/d/1TpQlQYovCoX9FkpgsoxzdvZplghudHAiQOame30A-v8/edit">Design Space</a></li>
+</ul></li>
+<li><a href="docs/FAQ.md">Frequently Asked Questions</a></li>
+</ul>
+
+<h1 id="setup">Setup</h1>
+
+<p>Grab the latest binary from the <a href="https://github.com/golang/dep/releases">releases</a> page.</p>
+
+<p>On macOS you can install or upgrade to the latest released version with Homebrew:</p>
+
+<pre><code class="language-sh">$ brew install dep
+$ brew upgrade dep
+</code></pre>
+
+<p>If you&rsquo;re interested in hacking on <code>dep</code>, you can install via <code>go get</code>:</p>
+
+<pre><code class="language-sh">go get -u github.com/golang/dep/cmd/dep
+</code></pre>
+
+<p>To start managing dependencies using dep, run the following from your project&rsquo;s root directory:</p>
+
+<pre><code class="language-sh">$ dep init
+</code></pre>
+
+<p>This does the following:</p>
+
+<ol>
+<li>Look for <a href="docs/FAQ.md#what-external-tools-are-supported">existing dependency management files</a> to convert</li>
+<li>Check if your dependencies use dep</li>
+<li>Identify your dependencies</li>
+<li>Back up your existing <code>vendor/</code> directory (if you have one) to
+<code>_vendor-TIMESTAMP/</code></li>
+<li>Pick the highest compatible version for each dependency</li>
+<li>Generate <a href="docs/Gopkg.toml.md"><code>Gopkg.toml</code></a> (&ldquo;manifest&rdquo;) and <code>Gopkg.lock</code> files</li>
+<li>Install the dependencies in <code>vendor/</code></li>
+</ol>
+
+<h1 id="usage">Usage</h1>
+
+<p>There is one main subcommand you will use: <code>dep ensure</code>. <code>ensure</code> first checks that <code>Gopkg.lock</code> is consistent with <code>Gopkg.toml</code> and the <code>import</code>s in your code. If any
+changes are detected, <code>dep</code>&rsquo;s solver works out a new <code>Gopkg.lock</code>. Then, <code>dep</code> checks if the contents of <code>vendor/</code> are what <code>Gopkg.lock</code> (the new one if applicable, else the existing one) says it should be, and rewrites <code>vendor/</code> as needed to bring it into line.</p>
+
+<p>In essence, <code>dep ensure</code> <a href="https://youtu.be/5LtMb090AZI?t=20m4s">works in two phases to keep four buckets of state in sync</a>:</p>
+
+<p><img width="463" alt="states-flow" src="https://user-images.githubusercontent.com/21599/29223886-22dd2578-7e96-11e7-8b51-3637b9ddc715.png"></p>
+
+<p><em>Note: until we ship <a href="https://github.com/golang/dep/issues/121">vendor verification</a>, we can&rsquo;t efficiently perform the <code>Gopkg.lock</code> &lt;-&gt; <code>vendor/</code> comparison, so <code>dep ensure</code> unconditionally regenerates all of <code>vendor/</code> to be safe.</em></p>
+
+<p><code>dep ensure</code> is safe to run early and often. See the help text for more detailed
+usage instructions.</p>
+
+<pre><code class="language-sh">$ dep help ensure
+</code></pre>
+
+<h2 id="installing-dependencies">Installing dependencies</h2>
+
+<p>(if your <code>vendor/</code> directory isn&rsquo;t <a href="docs/FAQ.md#should-i-commit-my-vendor-directory">checked in with your code</a>)</p>
+
+<!-- may change with https://github.com/golang/dep/pull/489 -->
+
+<pre><code class="language-sh">$ dep ensure
+</code></pre>
+
+<p>If a dependency already exists in your <code>vendor/</code> folder, dep will ensure it
+matches the constraints from the manifest. If the dependency is missing from
+<code>vendor/</code>, the latest version allowed by your manifest will be installed.</p>
+
+<h2 id="adding-a-dependency">Adding a dependency</h2>
+
+<pre><code class="language-sh">$ dep ensure -add github.com/foo/bar
+</code></pre>
+
+<p>This adds a version constraint to your <code>Gopkg.toml</code>, and updates <code>Gopkg.lock</code> and <code>vendor/</code>. Now, import and use the package in your code! ✨</p>
+
+<p><code>dep ensure -add</code> has some subtle behavior variations depending on the project or package named, and the state of your tree. See <code>dep ensure -examples</code> for more information.</p>
+
+<h2 id="changing-dependencies">Changing dependencies</h2>
+
+<p>If you want to:</p>
+
+<ul>
+<li>Change the allowed <code>version</code>/<code>branch</code>/<code>revision</code></li>
+<li>Switch to using a fork</li>
+</ul>
+
+<p>for one or more dependencies, do the following:</p>
+
+<ol>
+<li>Manually edit your <code>Gopkg.toml</code>.</li>
+
+<li><p>Run</p>
+
+<pre><code class="language-sh">$ dep ensure
+</code></pre></li>
+</ol>
+
+<h2 id="checking-the-status-of-dependencies">Checking the status of dependencies</h2>
+
+<p>Run <code>dep status</code> to see the current status of all your dependencies.</p>
+
+<pre><code class="language-sh">$ dep status
+PROJECT                             CONSTRAINT     VERSION        REVISION  LATEST
+github.com/Masterminds/semver       branch 2.x     branch 2.x     139cc09   c2e7f6c
+github.com/Masterminds/vcs          ^1.11.0        v1.11.1        3084677   3084677
+github.com/armon/go-radix           *              branch master  4239b77   4239b77
+</code></pre>
+
+<p>On top of that, if you have added new imports to your project or modified <code>Gopkg.toml</code> without running <code>dep ensure</code> again, <code>dep status</code> will tell you there is a mismatch between <code>Gopkg.lock</code> and the current status of the project.</p>
+
+<pre><code class="language-sh">$ dep status
+Lock inputs-digest mismatch due to the following packages missing from the lock:
+
+PROJECT                         MISSING PACKAGES
+github.com/Masterminds/goutils  [github.com/Masterminds/goutils]
+
+This happens when a new import is added. Run `dep ensure` to install the missing packages.
+</code></pre>
+
+<p>As <code>dep status</code> suggests, run <code>dep ensure</code> to update your lockfile. Then run <code>dep status</code> again, and the lock mismatch should go away.</p>
+
+<h2 id="visualizing-dependencies">Visualizing dependencies</h2>
+
+<p>Generate a visual representation of the dependency tree by piping the output of <code>dep status -dot</code> to <a href="http://www.graphviz.org/">graphviz</a>.</p>
+
+<h4 id="linux">Linux</h4>
+
+<pre><code>$ sudo apt-get install graphviz
+$ dep status -dot | dot -T png | display
+</code></pre>
+
+<h4 id="macos">MacOS</h4>
+
+<pre><code>$ brew install graphviz
+$ dep status -dot | dot -T png | open -f -a /Applications/Preview.app
+</code></pre>
+
+<h4 id="windows">Windows</h4>
+
+<pre><code>&gt; choco install graphviz.portable
+&gt; dep status -dot | dot -T png -o status.png; start status.png
+</code></pre>
+
+<p align="center"><img src="images/status-graph.png"></p>
+
+<h2 id="updating-dependencies">Updating dependencies</h2>
+
+<p>Updating brings the version of a dependency in <code>Gopkg.lock</code> and <code>vendor/</code> to the latest version allowed by the constraints in <code>Gopkg.toml</code>.</p>
+
+<p>You can update just a targeted subset of dependencies (recommended):</p>
+
+<pre><code class="language-sh">$ dep ensure -update github.com/some/project github.com/other/project
+$ dep ensure -update github.com/another/project
+</code></pre>
+
+<p>Or you can update all your dependencies at once:</p>
+
+<pre><code class="language-sh">$ dep ensure -update
+</code></pre>
+
+<p>&ldquo;Latest&rdquo; means different things depending on the type of constraint in use. If you&rsquo;re depending on a <code>branch</code>, <code>dep</code> will update to the latest tip of that branch. If you&rsquo;re depending on a <code>version</code> using <a href="#semantic-versioning">a semver range</a>, it will update to the latest version in that range.</p>
+
+<h2 id="removing-dependencies">Removing dependencies</h2>
+
+<ol>
+<li>Remove the <code>import</code>s and all usage from your code.</li>
+<li>Remove <code>[[constraint]]</code> rules from <code>Gopkg.toml</code> (if any).</li>
+
+<li><p>Run</p>
+
+<pre><code class="language-sh">$ dep ensure
+</code></pre></li>
+</ol>
+
+<h2 id="testing-changes-to-a-dependency">Testing changes to a dependency</h2>
+
+<p>Making changes in your <code>vendor/</code> directory directly is not recommended, as dep
+will overwrite any changes. Instead:</p>
+
+<ol>
+<li><p>Delete the dependency from the <code>vendor/</code> directory.</p>
+
+<pre><code class="language-sh">rm -rf vendor/&lt;dependency&gt;
+</code></pre></li>
+
+<li><p>Add that dependency to your <code>GOPATH</code>, if it isn&rsquo;t already.</p>
+
+<pre><code class="language-sh">$ go get &lt;dependency&gt;
+</code></pre></li>
+
+<li><p>Modify the dependency in <code>$GOPATH/src/&lt;dependency&gt;</code>.</p></li>
+
+<li><p>Test, build, etc.</p></li>
+</ol>
+
+<p>Don&rsquo;t run <code>dep ensure</code> until you&rsquo;re done. <code>dep ensure</code> will reinstall the
+dependency into <code>vendor/</code> based on your manifest, as if you were installing from
+scratch.</p>
+
+<p>This solution works for short-term use, but for something long-term, take a look
+at <a href="https://github.com/GetStream/vg">virtualgo</a>.</p>
+
+<p>To test out code that has been pushed as a new version, or to a branch or fork,
+see <a href="#changing-dependencies">changing dependencies</a>.</p>
+
+<h1 id="semantic-versioning">Semantic Versioning</h1>
+
+<p><code>dep ensure</code> uses an external <a href="https://github.com/Masterminds/semver">semver library</a> to interpret the version constraints you specify in the manifest. The comparison operators are:</p>
+
+<ul>
+<li><code>=</code>: equal</li>
+<li><code>!=</code>: not equal</li>
+<li><code>&gt;</code>: greater than</li>
+<li><code>&lt;</code>: less than</li>
+<li><code>&gt;=</code>: greater than or equal to</li>
+<li><code>&lt;=</code>: less than or equal to</li>
+<li><code>-</code>: literal range. Eg: 1.2 - 1.4.5 is equivalent to &gt;= 1.2, &lt;= 1.4.5</li>
+<li><code>~</code>: minor range. Eg: ~1.2.3 is equivalent to &gt;= 1.2.3, &lt; 1.3.0</li>
+<li><code>^</code>: major range. Eg: ^1.2.3 is equivalent to &gt;= 1.2.3, &lt; 2.0.0</li>
+<li><code>[xX*]</code>: wildcard. Eg: 1.2.x is equivalent to &gt;= 1.2.0, &lt; 1.3.0</li>
+</ul>
+
+<p>You might, for example, include a constraint in your manifest that specifies <code>version = &quot;=2.0.0&quot;</code> to pin a dependency to version 2.0.0, or constrain to minor releases with: <code>version = &quot;2.*&quot;</code>. Refer to the <a href="https://github.com/Masterminds/semver">semver library</a> documentation for more info.</p>
+
+<p><strong>Note</strong>: When you specify a version <em>without an operator</em>, <code>dep</code> automatically uses the <code>^</code> operator by default. <code>dep ensure</code> will interpret the given version as the min-boundry of a range, for example:</p>
+
+<ul>
+<li><code>1.2.3</code> becomes the range <code>&gt;=1.2.3, &lt;2.0.0</code></li>
+<li><code>0.2.3</code> becomes the range <code>&gt;=0.2.3, &lt;0.3.0</code></li>
+<li><code>0.0.3</code> becomes the range <code>&gt;=0.0.3, &lt;0.1.0</code></li>
+</ul>
+
+<h1 id="feedback">Feedback</h1>
+
+<p>Feedback is greatly appreciated.
+At this stage, the maintainers are most interested in feedback centered on the user experience (UX) of the tool.
+Do you have workflows that the tool supports well, or doesn&rsquo;t support at all?
+Do any of the commands have surprising effects, output, or results?
+Please check the existing issues and <a href="docs/FAQ.md">FAQ</a> to see if your feedback has already been reported.
+If not, please file an issue, describing what you did or wanted to do, what you expected to happen, and what actually happened.</p>
+
+<h1 id="contributing">Contributing</h1>
+
+<p>Contributions are greatly appreciated.
+The maintainers actively manage the issues list, and try to highlight issues suitable for newcomers.
+The project follows the typical GitHub pull request model.
+See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for more details.
+Before starting any work, please either comment on an existing issue, or file a new one.</p>
+
+    
+
+        </div>
+        <div class="dark-box">
+            
+        </div>
+    </div>
+    
+</body>
+</html>
