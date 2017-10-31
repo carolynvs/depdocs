@@ -11,3 +11,6 @@ preview:
 
 generate:
 	./scripts/depdocs.sh generate
+
+publish:
+	./scripts/depdocs.sh publish
