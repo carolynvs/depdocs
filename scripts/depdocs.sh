@@ -59,6 +59,10 @@ publish() {
   git worktree prune
   rm -r $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
+  echo "###Debugging all the things###"
+  git remote -vv
+  git config -l
+  
   echo "Checking out latest from the gh-pages branch..."
   git fetch upstream
   git worktree add -B gh-pages $DEPLOY upstream/gh-pages
