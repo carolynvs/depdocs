@@ -54,7 +54,7 @@ publish() {
 
   echo "Cleaning up from any previous deployments..."
   DEPLOY=$DOCS/_deploy
-  rm -r $DEPLOY 2> /dev/null || true
+  echo "rm -r $DEPLOY 2> /dev/null || true"
   mkdir -p $DEPLOY
   git worktree prune
   rm -r $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
