@@ -25,23 +25,23 @@ generate() {
   DOCSRC=${VERSION:-$BRANCH}
 
   if [[ "$VERSION" != "" ]]; then
-    DEST=$DOCS/_deploy/releases/$VERSION
+    DEST="_deploy/releases/$VERSION"
 
     # Start fresh so that removed files are picked up
-    rm -r $DEST 2> /dev/null || true
+    rm -r "$DOCS/$DEST" 2> /dev/null || true
 
     # Set the dep version in the doc's config
     sed -i.bak -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
   else
-    DEST=$DOCS/_deploy/
+    DEST="_deploy"
 
     # Start fresh so that removed files are picked up
     # Only nuke the main site, don't kill .git or other releases
-    find $DEST -type f ! -path "*/.git/*" ! -path "*/releases/*" -delete
+    find "$DOCS/$DEST" -type f ! -path "*/.git" ! -path "*/releases" -delete
   fi
 
   echo "Generating site @ $DOCSRC into $DEST ..."
-  hugo -d $DEST
+  hugo --debug -d $DEST
 }
 
 # Generate the current version's docs and push to the gh-pages branch
