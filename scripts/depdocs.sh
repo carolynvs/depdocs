@@ -37,7 +37,7 @@ generate() {
 
     # Start fresh so that removed files are picked up
     # Only nuke the main site, don't kill .git or other releases
-    find "$DOCS/$DEST" -type f ! -path "*/.git" ! -path "*/releases" -delete
+    find "$DOCS/$DEST" -type f ! -path "*/.git" ! -path "*/releases" -delete 2> /dev/null || true
   fi
 
   echo "Generating site @ $DOCSRC into $DEST ..."
