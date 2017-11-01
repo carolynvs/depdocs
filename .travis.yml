@@ -19,5 +19,5 @@ deploy:
   skip_cleanup: true
   on:
     repo: carolynvs/depdocs
-    branch: master
-    tags: true
+    # Deploy the master branch and all tags
+    condition: $TRAVIS_BRANCH == "master" || -n $TRAVIS_TAG
