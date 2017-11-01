@@ -52,6 +52,7 @@ publish() {
       exit 1;
   fi
 
+  ls $DOCS
   echo "Cleaning up from any previous deployments..."
   DEPLOY=$DOCS/_deploy
   echo "rm -r $DEPLOY 2> /dev/null || true"
