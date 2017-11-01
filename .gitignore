@@ -1,3 +1,4 @@
 .DS_Store
 /docs/_deploy/
 /docs/_preview/
+/docs/config.toml.bak
