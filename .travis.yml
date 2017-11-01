@@ -16,7 +16,6 @@ script:
 deploy:
 - provider: script
   script: make publish
-  skip_cleanup: true
   on:
     repo: carolynvs/depdocs
     # Deploy the master branch and all tags
