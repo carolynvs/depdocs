@@ -67,11 +67,11 @@ publish() {
 
   pushd $DEPLOY
   if git diff-index --quiet HEAD -- ; then
+    echo "Skipping site deployment, no changes found"
+  else
     echo "Publishing to the gh-pages branch..."
     git add --all
     git commit -m "Automagic site deployment 🎩✨"
-  else
-    echo "Skipping site deployment, no changes found"
   fi
   popd
 }
