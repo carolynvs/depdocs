@@ -59,20 +59,20 @@ publish() {
   git worktree prune
   rm -r $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
-  echo "###Debugging all the things###"
-  git remote -vv
-  git config -l
-  
   echo "Checking out latest from the gh-pages branch..."
-  git fetch upstream
-  git worktree add -B gh-pages $DEPLOY upstream/gh-pages
+  git fetch origin
+  git worktree add -B gh-pages $DEPLOY origin/gh-pages
 
   generate
 
-  echo "Publishing to the gh-pages branch..."
   pushd $DEPLOY
-  git add --all
-  git commit --allow-empty -m "Publishing to gh-pages"
+  if git diff-index --quiet HEAD -- ; then
+    echo "Publishing to the gh-pages branch..."
+    git add --all
+    git commit -m "Automagic site deployment 🎩✨"
+  else
+    echo "Skipping site deployment, no changes found"
+  fi
   popd
 }
 
