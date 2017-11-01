@@ -31,7 +31,7 @@ generate() {
     rm -r $DEST 2> /dev/null || true
 
     # Set the dep version in the doc's config
-    sed -i '' -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
+    sed -i.bak -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
   else
     DEST=$DOCS/_deploy/
 
