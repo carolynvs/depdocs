@@ -20,9 +20,9 @@ preview() {
 # tags are placed under root/releases/VERSION
 generate() {
   # Try overridden DEP_VERSION/BRANCH values before retrieving from git
-  VERSION=${DEP_VERSION:=$(git describe --exact-match --tags 2> /dev/null || echo "")}
-  BRANCH=${DEP_BRANCH:=$(git symbolic-ref --short HEAD 2> /dev/null || echo "")}
-  DOCSRC=${VERSION:=$BRANCH}
+  VERSION=${DEP_VERSION:-$(git describe --exact-match --tags 2> /dev/null || echo "")}
+  BRANCH=${DEP_BRANCH:-$(git symbolic-ref --short HEAD 2> /dev/null || echo "")}
+  DOCSRC=${VERSION:-$BRANCH}
 
   if [[ "$VERSION" != "" ]]; then
     DEST=$DOCS/_deploy/releases/$VERSION
