@@ -60,8 +60,8 @@ publish() {
   rm -r $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
   echo "Checking out latest from the gh-pages branch..."
-  git fetch origin gh-pages
-  git worktree add -B gh-pages $DEPLOY origin/gh-pages
+  git fetch --depth=1 origin gh-pages:gh-pages
+  git worktree add -B gh-pages $DEPLOY gh-pages
 
   generate
 
