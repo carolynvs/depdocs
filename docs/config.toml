@@ -1,7 +1,10 @@
 languageCode = "en-us"
-title = "dep docs"
+title = "dep"
 baseurl = "http://carolynvs.github.io/depdocs/"
 theme = "hugo-alabaster-theme"
+
+[params]
+  depver = "v0.3.0"
 
 [params.sidebar]
   logo = "images/logo.png"

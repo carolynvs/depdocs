@@ -15,11 +15,30 @@ preview() {
 }
 
 # Generate the static site's content for the current version
+# master is dumped into the root
+# tags are placed under root/releases/VERSION
 generate() {
-  hugo -d ./_deploy
+  VERSION=$1
+
+  if [[ "$VERSION" != "master" ]]; then
+    DEST=./_deploy/releases/$VERSION
+
+    # Start fresh so that removed files are picked up
+    rm -r $DEST || true
+
+    # Set the dep version in the doc's config
+    sed -i '' -e 's/depver = ""/depver = "'"$VERSION"'"/' docs/config.toml
+  else
+    # Start fresh so that removed files are picked up
+    # Only nuke the main site, don't kill .git or other releases
+    find $DEST -type f ! -path "*/.git/*" ! -path "*/releases/*" -delete
+  fi
+
+  echo "Generating site @ $VERSION into $DEST ..."
+  hugo -d $DEST
 }
 
-# Generate the entire site, all versions, and publish to the gh-pages branch
+# Generate the current version's docs and push to the gh-pages branch
 publish() {
   if [[ $(git status -s) ]]
   then
@@ -41,9 +60,7 @@ publish() {
   git fetch upstream
   git worktree add -B gh-pages $DEPLOY upstream/gh-pages
 
-  echo "Generating site..."
-  rm -r $DEPLOY/*
-  generate
+  generate $VERSION
 
   echo "Publishing to the gh-pages branch..."
   pushd $DEPLOY
