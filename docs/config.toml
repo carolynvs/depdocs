@@ -1,4 +1,8 @@
 languageCode = "en-us"
 title = "dep docs"
 baseurl = "http://carolynvs.github.io/depdocs/"
-theme = "docuapi"
+theme = "hugo-alabaster-theme"
+
+[params.sidebar]
+  logo = "images/logo.png"
+  show_relations = false
