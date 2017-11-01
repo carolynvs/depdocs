@@ -6,6 +6,7 @@ DOCS="$REPO_ROOT/docs"
 
 # Run the hugo binary in a container, allowing for live-edits of the site's content
 hugo () {
+  # carolynvs/hugo comes from docs/hugo/Dockerfile
   docker run --rm -it -v $DOCS:/var/www -w /var/www -p 1313:1313 carolynvs/hugo:0.30.2 $@
 }
 
@@ -18,11 +19,13 @@ preview() {
 # master is dumped into the root
 # tags are placed under root/releases/VERSION
 generate() {
-  VERSION=$(git describe --exact-match --tags 2> /dev/null || echo "")
+  # Try overridden DEP_VERSION/BRANCH values before retrieving from git
+  VERSION=${DEP_VERSION:=$(git describe --exact-match --tags 2> /dev/null || echo "")}
+  BRANCH=${DEP_BRANCH:=$(git symbolic-ref --short HEAD 2> /dev/null || echo "")}
+  DOCSRC=${VERSION:=$BRANCH}
 
   if [[ "$VERSION" != "" ]]; then
     DEST=$DOCS/_deploy/releases/$VERSION
-    DOCSRC=$VERSION
 
     # Start fresh so that removed files are picked up
     rm -r $DEST 2> /dev/null || true
@@ -31,7 +34,6 @@ generate() {
     sed -i '' -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
   else
     DEST=$DOCS/_deploy/
-    DOCSRC=$(git symbolic-ref --short HEAD)
 
     # Start fresh so that removed files are picked up
     # Only nuke the main site, don't kill .git or other releases
