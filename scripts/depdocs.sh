@@ -11,30 +11,34 @@ hugo () {
 
 # Serve a live preview of the site
 preview() {
-  hugo server --debug --baseUrl=http://localhost --bind=0.0.0.0 -d ./_preview
+  hugo server --debug --baseUrl=http://localhost --bind=0.0.0.0 -d $DOCS/_preview
 }
 
 # Generate the static site's content for the current version
 # master is dumped into the root
 # tags are placed under root/releases/VERSION
 generate() {
-  VERSION=$1
+  VERSION=$(git describe --exact-match --tags 2> /dev/null || echo "")
 
-  if [[ "$VERSION" != "master" ]]; then
-    DEST=./_deploy/releases/$VERSION
+  if [[ "$VERSION" != "" ]]; then
+    DEST=$DOCS/_deploy/releases/$VERSION
+    DOCSRC=$VERSION
 
     # Start fresh so that removed files are picked up
-    rm -r $DEST || true
+    rm -r $DEST 2> /dev/null || true
 
     # Set the dep version in the doc's config
-    sed -i '' -e 's/depver = ""/depver = "'"$VERSION"'"/' docs/config.toml
+    sed -i '' -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
   else
+    DEST=$DOCS/_deploy/
+    DOCSRC=$(git symbolic-ref --short HEAD)
+
     # Start fresh so that removed files are picked up
     # Only nuke the main site, don't kill .git or other releases
     find $DEST -type f ! -path "*/.git/*" ! -path "*/releases/*" -delete
   fi
 
-  echo "Generating site @ $VERSION into $DEST ..."
+  echo "Generating site @ $DOCSRC into $DEST ..."
   hugo -d $DEST
 }
 
@@ -46,21 +50,18 @@ publish() {
       exit 1;
   fi
 
-  # Travis will only trigger on tags anyway, this just adds another sanity check
-  VERSION=$(git describe --exact-match --tags)
-
   echo "Cleaning up from any previous deployments..."
   DEPLOY=$DOCS/_deploy
-  rm -r $DEPLOY || true
+  rm -r $DEPLOY 2> /dev/null || true
   mkdir -p $DEPLOY
   git worktree prune
-  rm -r $REPO_ROOT/.git/worktrees/_deploy || true
+  rm -r $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
   echo "Checking out latest from the gh-pages branch..."
   git fetch upstream
   git worktree add -B gh-pages $DEPLOY upstream/gh-pages
 
-  generate $VERSION
+  generate
 
   echo "Publishing to the gh-pages branch..."
   pushd $DEPLOY
