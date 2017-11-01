@@ -3,6 +3,7 @@ sudo: false # Run in a container
 services:
   - docker # Enable running docker commands
 env:
+  global:
   # Use the values from Travis directly instead of retrieving from git
   - DEP_VERSION=$TRAVIS_TAG
   - DEP_BRANCH=$TRAVIS_BRANCH
