@@ -49,7 +49,7 @@ publish() {
   if [[ $(git status -s) ]]
   then
       echo "The working directory is dirty. Please commit any pending changes."
-      exit 1;
+      #exit 1;
   fi
 
   ls $DOCS
@@ -60,6 +60,7 @@ publish() {
   rm -fr $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
   echo "Checking out latest from the gh-pages branch..."
+  git branch -D gh-pages 2> /dev/null || true
   git fetch --depth=1 origin gh-pages:gh-pages
   git worktree add -B gh-pages $DEPLOY gh-pages
 
