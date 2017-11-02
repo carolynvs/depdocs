@@ -12,9 +12,9 @@ env:
 script:
 - make generate
 before_deploy:
-- openssl aes-256-cbc -K $encrypted_1f8198cff0f3_key -iv $encrypted_1f8198cff0f3_iv -in script/travis.deploy.pem.enc -out script/travis.deploy.pem -d
-- chmod 600 script/travis.deploy.pem
-- eval "$(ssh-agent -s)" && ssh-add script/travis.deploy.pem
+- openssl aes-256-cbc -K $encrypted_1f8198cff0f3_key -iv $encrypted_1f8198cff0f3_iv -in scripts/travis.deploy.pem.enc -out scripts/travis.deploy.pem -d
+- chmod 600 scripts/travis.deploy.pem
+- eval "$(ssh-agent -s)" && ssh-add scripts/travis.deploy.pem
 deploy:
 - provider: script
   script: make publish
