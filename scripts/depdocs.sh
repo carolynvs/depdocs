@@ -7,7 +7,7 @@ DOCS="$REPO_ROOT/docs"
 # Run the hugo binary in a container, allowing for live-edits of the site's content
 hugo () {
   # carolynvs/hugo comes from docs/hugo/Dockerfile
-  docker run --rm -it -v $DOCS:/var/www -w /var/www -p 1313:1313 carolynvs/hugo:0.30.2 $@
+  docker run --rm -it -u $UID -v $DOCS:/var/www -w /var/www -p 1313:1313 carolynvs/hugo:0.30.2 $@
 }
 
 # Serve a live preview of the site
