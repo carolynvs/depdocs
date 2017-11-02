@@ -28,7 +28,7 @@ generate() {
     DEST="_deploy/releases/$VERSION"
 
     # Start fresh so that removed files are picked up
-    rm -r "$DOCS/$DEST" 2> /dev/null || true
+    rm -fr "$DOCS/$DEST" 2> /dev/null || true
 
     # Set the dep version in the doc's config
     sed -i.bak -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
@@ -56,7 +56,6 @@ publish() {
   echo "Cleaning up from any previous deployments..."
   DEPLOY=$DOCS/_deploy
   rm -fr $DEPLOY 2> /dev/null || true
-  mkdir -p $DEPLOY
   git worktree prune
   rm -fr $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
