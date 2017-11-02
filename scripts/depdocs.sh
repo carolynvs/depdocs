@@ -56,6 +56,8 @@ publish() {
   echo "Cleaning up from any previous deployments..."
   DEPLOY=$DOCS/_deploy
   if [[ -d $DEPLOY ]]; then
+    echo $USER
+    ls -la $DEPLOY
     rm -fr $DEPLOY
   fi
   git branch -D gh-pages 2> /dev/null || true
@@ -64,8 +66,6 @@ publish() {
 
   echo "Checking out latest from the gh-pages branch..."
   git fetch --depth=1 origin gh-pages:gh-pages
-  echo $USER
-  ls -la $DEPLOY
   git worktree add -B gh-pages $DEPLOY gh-pages
 
   generate
