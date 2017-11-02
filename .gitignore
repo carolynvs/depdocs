@@ -2,3 +2,4 @@
 /docs/_deploy/
 /docs/_preview/
 /docs/config.toml.bak
+scripts/travis.deploy.pem
