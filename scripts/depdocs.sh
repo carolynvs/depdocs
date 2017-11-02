@@ -55,13 +55,16 @@ publish() {
   ls $DOCS
   echo "Cleaning up from any previous deployments..."
   DEPLOY=$DOCS/_deploy
-  rm -fr $DEPLOY 2> /dev/null || true
+  if [[ -d $DEPLOY ]]; then
+    rm -fr $DEPLOY
+  fi
+  git branch -D gh-pages 2> /dev/null || true
   git worktree prune
   rm -fr $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
   echo "Checking out latest from the gh-pages branch..."
-  git branch -D gh-pages 2> /dev/null || true
   git fetch --depth=1 origin gh-pages:gh-pages
+  ls $DEPLOY
   git worktree add -B gh-pages $DEPLOY gh-pages
 
   generate
