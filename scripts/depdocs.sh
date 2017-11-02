@@ -2,7 +2,7 @@
 set -xeuo pipefail
 
 REPO_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-DOCS="$REPO_ROOT/docs"
+DOCS=$REPO_ROOT/docs
 
 # Run the hugo binary in a container, allowing for live-edits of the site's content
 hugo () {
@@ -25,19 +25,23 @@ generate() {
   DOCSRC=${VERSION:-$BRANCH}
 
   if [[ "$VERSION" != "" ]]; then
-    DEST="_deploy/releases/$VERSION"
+    DEST=_deploy/releases/$VERSION
 
     # Start fresh so that removed files are picked up
-    rm -fr "$DOCS/$DEST" 2> /dev/null || true
+    if [[ -d $DOCS/$DEST ]]; then
+      rm -r $DOCS/$DEST
+    fi
 
     # Set the dep version in the doc's config
     sed -i.bak -e 's/depver = ""/depver = "'"$VERSION"'"/' $DOCS/config.toml
   else
-    DEST="_deploy"
+    DEST=_deploy
 
     # Start fresh so that removed files are picked up
     # Only nuke the main site, don't kill .git or other releases
-    find "$DOCS/$DEST" -type f ! -path "*/.git" ! -path "*/releases" -delete 2> /dev/null || true
+    if [[ -d $DOCS/$DEST ]]; then
+      find $DOCS/$DEST -type f ! -path "*/.git" ! -path "*/releases" -delete
+    fi
   fi
 
   echo "Generating site @ $DOCSRC into $DEST ..."
@@ -46,27 +50,18 @@ generate() {
 
 # Generate the current version's docs and push to the gh-pages branch
 publish() {
-  if [[ $(git status -s) ]]
-  then
-      echo "The working directory is dirty. Please commit any pending changes."
-      #exit 1;
-  fi
-
-  ls $DOCS
-  echo "Cleaning up from any previous deployments..."
+  echo "Cleaning up from previous runs..."
   DEPLOY=$DOCS/_deploy
   if [[ -d $DEPLOY ]]; then
-    echo $USER
-    ls -la $DEPLOY
-    rm -fr $DEPLOY
+    rm -r $DEPLOY
   fi
-  git branch -D gh-pages 2> /dev/null || true
   git worktree prune
-  rm -fr $REPO_ROOT/.git/worktrees/_deploy 2> /dev/null || true
 
   echo "Checking out latest from the gh-pages branch..."
-  git fetch --depth=1 origin gh-pages:gh-pages
-  git worktree add -B gh-pages $DEPLOY gh-pages
+  # Fix our shallow clone (Travis) to allow grabbing a different remote branch
+  git remote set-branches origin '*'
+  git fetch --depth=1 origin gh-pages
+  git worktree add -B gh-pages $DEPLOY origin/gh-pages
 
   generate
 
