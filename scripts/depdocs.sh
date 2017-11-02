@@ -72,6 +72,7 @@ publish() {
     echo "Publishing to the gh-pages branch..."
     git add --all
     git commit -m "Automagic site deployment 🎩✨"
+    git push
   fi
   popd
 }
