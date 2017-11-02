@@ -64,7 +64,8 @@ publish() {
 
   echo "Checking out latest from the gh-pages branch..."
   git fetch --depth=1 origin gh-pages:gh-pages
-  ls $DEPLOY
+  echo $USER
+  ls -la $DEPLOY
   git worktree add -B gh-pages $DEPLOY gh-pages
 
   generate
