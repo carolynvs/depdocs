@@ -12,7 +12,7 @@ hugo () {
 
 # Serve a live preview of the site
 preview() {
-  hugo server --debug --baseUrl=http://localhost --bind=0.0.0.0 -d $DOCS/_preview
+  hugo server --debug --baseUrl=http://localhost --bind=0.0.0.0 -d _preview
 }
 
 # Generate the static site's content for the current version
