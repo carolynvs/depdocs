@@ -66,7 +66,7 @@ publish() {
   generate
 
   pushd $DEPLOY
-  if [[ -n "$(git status --porcelain)" ]]; then
+  if [[ -z "$(git status --porcelain)" ]]; then
     echo "Skipping site deployment, no changes found"
   else
     echo "Publishing to the gh-pages branch..."
