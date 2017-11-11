@@ -5,8 +5,6 @@ menu: main
 weight: 1
 ---
 
-hello world!
-
 This is a prototype dependency management tool for Go. It requires Go 1.8 or newer to compile.
 
 The dep project is the official _experiment_, but not yet the official tool. Check out the [Roadmap](https://github.com/golang/dep/wiki/Roadmap) for more on what this means!
