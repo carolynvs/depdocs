@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head lang="en-us">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+	
+	<meta name="generator" content="Hugo 0.30.2" />
+
+	<title>Setup &mdash; dep</title>
+
+	<link rel="stylesheet" href="https://carolynvs.github.io/depdocs/css/alabaster.css" type="text/css" />
+	<link rel="stylesheet" href="https://carolynvs.github.io/depdocs/css/custom.css" type="text/css" />
+	<link rel="stylesheet" href="https://carolynvs.github.io/depdocs/css/pygments.css" type="text/css" />
+
+	
+
+	<link rel="shortcut icon" href="https://carolynvs.github.io/depdocs/favicon.ico" type="image/x-icon"/>
+</head>
+
+
+	<body role="document">
+		<div class="document">
+			<div class="documentwrapper">
+				<div class="bodywrapper">
+					<div class="body" role="main">
+						
+	<h1>Setup</h1>
+
+	
+
+	<p>Grab the latest binary from the <a href="https://github.com/golang/dep/releases">releases</a> page.</p>
+
+<p>On macOS you can install or upgrade to the latest released version with Homebrew:</p>
+
+<pre><code class="language-sh">$ brew install dep
+$ brew upgrade dep
+</code></pre>
+
+<p>If you&rsquo;re interested in hacking on <code>dep</code>, you can install via <code>go get</code>:</p>
+
+<pre><code class="language-sh">go get -u github.com/golang/dep/cmd/dep
+</code></pre>
+
+<p>To start managing dependencies using dep, run the following from your project&rsquo;s root directory:</p>
+
+<pre><code class="language-sh">$ dep init
+</code></pre>
+
+<p>This does the following:</p>
+
+<ol>
+<li>Look for <a href="docs/FAQ.md#what-external-tools-are-supported">existing dependency management files</a> to convert</li>
+<li>Check if your dependencies use dep</li>
+<li>Identify your dependencies</li>
+<li>Back up your existing <code>vendor/</code> directory (if you have one) to
+<code>_vendor-TIMESTAMP/</code></li>
+<li>Pick the highest compatible version for each dependency</li>
+<li>Generate <a href="docs/Gopkg.toml.md"><code>Gopkg.toml</code></a> (&ldquo;manifest&rdquo;) and <code>Gopkg.lock</code> files</li>
+<li>Install the dependencies in <code>vendor/</code></li>
+</ol>
+
+
+
+						
+					</div>
+				</div>
+			</div>
+			
+			<div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+	<div class="sphinxsidebarwrapper">
+		<p class="logo">
+			<a href="https://carolynvs.github.io/depdocs/">
+				<img class="logo" src="https://carolynvs.github.io/depdocs/images/logo.png" alt="Logo"/>
+				<h1 class="logo logo-name"></h1>
+			</a>
+		</p>
+		
+		
+
+		
+		
+
+		
+
+<h3>Navigation</h3>
+<ul>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/">dep</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/setup/">Setup</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/usage/">Usage</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/faq/">FAQ</a>
+	</li>
+	
+</ul>
+
+
+
+		
+
+	</div>
+</div>
+<div class="clearer"></div>
+</div>
+			<div class="footer">
+	&copy; 2017 
+	
+</div>
+
+
+
+
+			
+
+			
+
+			
+		</div>
+	</body>
+</html>
