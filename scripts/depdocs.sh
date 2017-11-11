@@ -70,6 +70,8 @@ publish() {
     echo "Skipping site deployment, no changes found"
   else
     echo "Publishing to the gh-pages branch..."
+    git config user.name "Travis CI"
+    git config user.email "travis@travis-ci.org"  
     git add --all
     git commit -m "Automagic site deployment @ $DOCSRC 🎩✨"
     git config -l
