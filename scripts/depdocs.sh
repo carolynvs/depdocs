@@ -55,13 +55,9 @@ publish() {
   if [[ -d $DEPLOY ]]; then
     rm -r $DEPLOY
   fi
-  git worktree prune
 
   echo "Checking out latest from the gh-pages branch..."
-  # Fix our shallow clone (Travis) to allow grabbing a different remote branch
-  git remote set-branches origin '*'
-  git fetch --force --depth=1 origin gh-pages:gh-pages
-  git worktree add -B gh-pages $DEPLOY origin/gh-pages
+  git clone --branch gh-pages --depth 1 git@github.com:carolynvs/depdocs.git $DEPLOY
 
   generate
 
@@ -71,12 +67,10 @@ publish() {
   else
     echo "Publishing to the gh-pages branch..."
     git config user.name "Travis CI"
-    git config user.email "travis@travis-ci.org"  
+    git config user.email "travis@travis-ci.org"
     git add --all
     git commit -m "Automagic site deployment @ $DOCSRC 🎩✨"
-    git config -l
-    export GIT_SSH_COMMAND="ssh -v"
-    git push origin gh-pages
+    git push
   fi
   popd
 }
