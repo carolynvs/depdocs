@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head lang="en-us">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+	
+	<meta name="generator" content="Hugo 0.30.2" />
+
+	<title> dep</title>
+
+	<link rel="stylesheet" href="https://carolynvs.github.io/depdocs/css/alabaster.css" type="text/css" />
+	<link rel="stylesheet" href="https://carolynvs.github.io/depdocs/css/custom.css" type="text/css" />
+	<link rel="stylesheet" href="https://carolynvs.github.io/depdocs/css/pygments.css" type="text/css" />
+
+	
+
+	<link rel="shortcut icon" href="https://carolynvs.github.io/depdocs/favicon.ico" type="image/x-icon"/>
+</head>
+
+
+	<body role="document">
+		<div class="document">
+			<div class="documentwrapper">
+				<div class="bodywrapper">
+					<div class="body" role="main">
+						
+	
+		
+		<h1>dep @ v0.5.0</h1>
+		
+
+		
+
+<p>hello world!</p>
+
+<p>This is a prototype dependency management tool for Go. It requires Go 1.8 or newer to compile.</p>
+
+<p>The dep project is the official <em>experiment</em>, but not yet the official tool. Check out the <a href="https://github.com/golang/dep/wiki/Roadmap">Roadmap</a> for more on what this means!</p>
+
+<h2 id="current-status">Current status</h2>
+
+<p>It is safe to use dep in production. That means two things:</p>
+
+<ul>
+<li>Any valid metadata file (<code>Gopkg.toml</code> and <code>Gopkg.lock</code>) will be readable and considered valid by any future version of <code>dep</code>.</li>
+<li>The CLI UI is mostly stable. <code>dep init</code> and <code>dep ensure</code> are mostly set; <code>dep status</code> is likely to change a fair bit, and <code>dep prune</code> is <a href="https://github.com/golang/dep/issues/944">going to be absorbed into <code>dep ensure</code></a>.</li>
+</ul>
+
+<p>That said, keep in mind the following:</p>
+
+<ul>
+<li><code>dep init</code> on an existing project can be a rocky experience - we try to automatically convert from other tools&rsquo; metadata files, and that process is often complex and murky. Once your project is converted and you&rsquo;re using <code>dep ensure</code>, its behavior is quite stable.</li>
+<li><code>dep</code> still has nasty bugs, but in general these are comparable to or fewer than other tools out there.</li>
+<li><code>dep</code> is <a href="https://github.com/golang/dep/blob/master/docs/FAQ.md#why-is-dep-slow">pretty slow right now</a>, especially on the first couple times you run it. Just know that there is a <em>lot</em> of headroom for improvement, and work is actively underway.</li>
+<li><code>dep</code> is still changing rapidly. If you need stability (e.g. for CI), it&rsquo;s best to rely on a released version, not tip.</li>
+<li><code>dep</code>&rsquo;s exported API interface will continue to change in unpredictable, backwards-incompatible ways until we tag a v1.0.0 release.</li>
+</ul>
+
+<h2 id="context">Context</h2>
+
+<ul>
+<li><a href="https://blog.gopheracademy.com/advent-2016/saga-go-dependency-management/">The Saga of Go Dependency Management</a></li>
+<li>Official Google Docs
+
+<ul>
+<li><a href="https://docs.google.com/document/d/18tNd8r5DV0yluCR7tPvkMTsWD_lYcRO7NhpNSDymRr8/edit">Go Packaging Proposal Process</a></li>
+<li><a href="https://docs.google.com/document/d/1wT8e8wBHMrSRHY4UF_60GCgyWGqvYye4THvaDARPySs/edit">User Stories</a></li>
+<li><a href="https://docs.google.com/document/d/1JNP6DgSK-c6KqveIhQk-n_HAw3hsZkL-okoleM43NgA/edit">Features</a></li>
+<li><a href="https://docs.google.com/document/d/1TpQlQYovCoX9FkpgsoxzdvZplghudHAiQOame30A-v8/edit">Design Space</a></li>
+</ul></li>
+<li><a href="docs/FAQ.md">Frequently Asked Questions</a></li>
+</ul>
+
+<h1 id="semantic-versioning">Semantic Versioning</h1>
+
+<p><code>dep ensure</code> uses an external <a href="https://github.com/Masterminds/semver">semver library</a> to interpret the version constraints you specify in the manifest. The comparison operators are:</p>
+
+<ul>
+<li><code>=</code>: equal</li>
+<li><code>!=</code>: not equal</li>
+<li><code>&gt;</code>: greater than</li>
+<li><code>&lt;</code>: less than</li>
+<li><code>&gt;=</code>: greater than or equal to</li>
+<li><code>&lt;=</code>: less than or equal to</li>
+<li><code>-</code>: literal range. Eg: 1.2 - 1.4.5 is equivalent to &gt;= 1.2, &lt;= 1.4.5</li>
+<li><code>~</code>: minor range. Eg: ~1.2.3 is equivalent to &gt;= 1.2.3, &lt; 1.3.0</li>
+<li><code>^</code>: major range. Eg: ^1.2.3 is equivalent to &gt;= 1.2.3, &lt; 2.0.0</li>
+<li><code>[xX*]</code>: wildcard. Eg: 1.2.x is equivalent to &gt;= 1.2.0, &lt; 1.3.0</li>
+</ul>
+
+<p>You might, for example, include a constraint in your manifest that specifies <code>version = &quot;=2.0.0&quot;</code> to pin a dependency to version 2.0.0, or constrain to minor releases with: <code>version = &quot;2.*&quot;</code>. Refer to the <a href="https://github.com/Masterminds/semver">semver library</a> documentation for more info.</p>
+
+<p><strong>Note</strong>: When you specify a version <em>without an operator</em>, <code>dep</code> automatically uses the <code>^</code> operator by default. <code>dep ensure</code> will interpret the given version as the min-boundry of a range, for example:</p>
+
+<ul>
+<li><code>1.2.3</code> becomes the range <code>&gt;=1.2.3, &lt;2.0.0</code></li>
+<li><code>0.2.3</code> becomes the range <code>&gt;=0.2.3, &lt;0.3.0</code></li>
+<li><code>0.0.3</code> becomes the range <code>&gt;=0.0.3, &lt;0.1.0</code></li>
+</ul>
+
+<h1 id="feedback">Feedback</h1>
+
+<p>Feedback is greatly appreciated.
+At this stage, the maintainers are most interested in feedback centered on the user experience (UX) of the tool.
+Do you have workflows that the tool supports well, or doesn&rsquo;t support at all?
+Do any of the commands have surprising effects, output, or results?
+Please check the existing issues and <a href="docs/FAQ.md">FAQ</a> to see if your feedback has already been reported.
+If not, please file an issue, describing what you did or wanted to do, what you expected to happen, and what actually happened.</p>
+
+<h1 id="contributing">Contributing</h1>
+
+<p>Contributions are greatly appreciated.
+The maintainers actively manage the issues list, and try to highlight issues suitable for newcomers.
+The project follows the typical GitHub pull request model.
+See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for more details.
+Before starting any work, please either comment on an existing issue, or file a new one.</p>
+
+	
+
+
+						
+					</div>
+				</div>
+			</div>
+			
+			<div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+	<div class="sphinxsidebarwrapper">
+		<p class="logo">
+			<a href="https://carolynvs.github.io/depdocs/">
+				<img class="logo" src="https://carolynvs.github.io/depdocs/images/logo.png" alt="Logo"/>
+				<h1 class="logo logo-name"></h1>
+			</a>
+		</p>
+		
+		
+
+		
+		
+
+		
+
+
+<h3>v0.5.0 Documentation</h3>
+
+
+<ul>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/">dep</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/setup/">Setup</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/usage/">Usage</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/faq/">FAQ</a>
+	</li>
+	
+</ul>
+
+
+
+
+
+<h3>Other Releases</h3>
+<ul>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/releases/v0.4.0/">v0.4.0</a>
+	</li>
+	
+	<li class="toctree-l1">
+		<a class="reference internal" href="/depdocs/releases/v0.5.0/">v0.5.0</a>
+	</li>
+	
+</ul>
+
+
+
+		
+
+	</div>
+</div>
+<div class="clearer"></div>
+</div>
+			<div class="footer">
+	&copy; 2017 
+	
+</div>
+
+
+
+
+			
+
+			
+
+			
+		</div>
+	</body>
+</html>
