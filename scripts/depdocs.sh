@@ -40,7 +40,7 @@ generate() {
     # Start fresh so that removed files are picked up
     # Only nuke the main site, don't kill .git or other releases
     if [[ -d $DOCS/$DEST ]]; then
-      find $DOCS/$DEST -type f ! -path "*/.git" ! -path "*/releases" -delete
+      find $DOCS/$DEST -type f ! -path "*/.git*" ! -path "*/releases*" -print
     fi
   fi
 
