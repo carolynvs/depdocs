@@ -50,8 +50,9 @@ $ dep init  This does the following:</description>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://carolynvs.github.io/depdocs/faq/</guid>
-      <description>What is X? farts
-Why did you do Y? kittens</description>
+      <description>The first rule of FAQ is don&amp;rsquo;t bikeshed the FAQ, leave that for Create structure for managing docs.
+Please contribute to the FAQ! Found an explanation in an issue or pull request helpful? Summarize the question and quote the reply, linking back to the original comment.
+Concepts  Does dep replace go get? Why is it dep ensure instead of dep install? What is a direct or transitive dependency?  Configuration  What is the difference between Gopkg.</description>
     </item>
     
   </channel>
